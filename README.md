@@ -47,59 +47,47 @@
 
 ## Tool Inventory
 
-<!-- Four lines per tool. This is worth 2 points and it's the single most
-     common place students lose them.
-
-     "Returns a list" earns NOTHING. The description has to say what is IN
-     the list.
-
-     The empty case isn't optional either — it's the thing your loop branches
-     on, and if you don't decide it here you'll discover it as a crash in
-     Milestone 5. -->
-
 ### `search_listings`
 
-- **What it does:**
-- **Inputs:** <!-- name and type each: `max_price` (float), not "a price" -->
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Searches the listings dataset for the items which satisfy the max_price and size constraints if provided, and which best match the description.
+- **Inputs:** `description` (`str`) is keywords describing the desired item, `size` (`str | None`) is the clothing size to filter on, and `max_price` (`float | None`) is the budget limit; the latter two inputs are optional.
+- **Returns:** Returns a `list[dict]`, where each dict represents a matching clothing piece in the listings data with fields `id`, `title`, `description`, `category`, `style_tags`, `size`, `condition`, `price`, `colors`, `brand`, and `platform`.
+- **When it has nothing:** It returns an empty list, `[]`.
 
 ### `suggest_outfit`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Suggests one or two outfit combinations pairing a thrifted item with pieces the user already owns in their wardrobe.
+- **Inputs:** `new_item` (`dict`) is a listing dictionary representing the thrifted piece under consideration, and `wardrobe` (`dict`) is a dictionary containing an `'items'` key holding a list of wardrobe item dicts.
+- **Returns:** Returns a non-empty `str` containing outfit recommendations naming specific matching pieces from the user's wardrobe.
+- **When it has nothing:** When the user's wardrobe is empty, i.e. the wardrobe's `'items'` list is empty, it returns a non-empty `str` providing general styling advice for the item rather than raising an error or returning an empty string.
 
 ### `create_fit_card`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Generates a short social media caption about a thrifted find and its suggested outfit.
+- **Inputs:** `outfit` (`str`) is the outfit suggestion string (typically from `suggest_outfit`), and `new_item` (`dict`) is the listing dictionary for the thrifted item.
+- **Returns:** Returns a `str` containing a two-to-four sentence caption formatted like a real social media post, mentioning the item, its price, and its platform once each while conveying the aesthetic vibe.
+- **When it has nothing:** When `outfit` is empty or contains only whitespace, it returns a non-empty `str` with a descriptive fallback message rather than raising an exception.
 
 ---
 
 ## Planning Loop
 
-<!-- Your branch rule, stated as a rule — the condition AND both paths — plus
-     the file and function that holds it.
-
-     Like this:
-       "If search_listings returns an empty list, put a message in the session
-        and stop. Otherwise take the first result and go to suggest_outfit."
-        — agent.py::run_agent
-
-     The grader checks your code against what you claim here, so the file and
-     function have to be real. -->
-
-**Branch rule:**
+**Branch rule:** If `search_listings` returns an empty list, write an actionable message to `session["error"]` naming search parameters the user could adjust (such as increasing the price ceiling, removing size filters, or broadening keywords) and stop execution before calling `suggest_outfit`. Otherwise, save `search_results[0]` into `session["selected_item"]` and continue to `suggest_outfit`.
 
 **Where it lives:** `agent.py::run_agent`
 
-**How the query is parsed:** <!-- regex, string splitting, or asking the model — say which -->
+**How the query is parsed:** Regex matching on price ceilings (e.g. `under $X` or `max $X`) and sizes (e.g. `size X` or standalone size tokens like `S`, `M`, `L`, `XL`), with remaining terms cleaned of punctuation and stopwords to form the `description` keyword query.
 
-**What moves through the session:** <!-- which fields, in what order -->
+**What moves through the session:**
+1. `query` & `wardrobe` (set initially in `new_session`)
+2. `parsed` (populated with extracted `description`, `size`, `max_price`)
+3. `search_results` (populated by `search_listings`)
+4. Branch decision:
+   - If empty: `error` is set, and the loop returns early.
+   - If non-empty:
+     5. `selected_item` (set to `search_results[0]`)
+     6. `outfit_suggestion` (populated by `suggest_outfit`)
+     7. `fit_card` (populated by `create_fit_card`)
 
 ---
 
