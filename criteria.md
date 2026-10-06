@@ -25,9 +25,7 @@ Given a query that matches at least one listing, the agent completes all three
 tool calls and returns a fit card — in at least 4 of 5 tries.
 
 **Why this target:**
-<!-- Why 4 of 5 and not 5 of 5? Something about your search, probably —
-     "my search is a plain keyword match and some phrasings will miss" is a
-     real answer. -->
+Our query parser and search use plain keyword matching, regex extraction, and external model calls. Some natural phrasing variations or transient model network delays may occasionally fail to produce an end-to-end completion, making 4 of 5 a realistic standard for a non-deterministic pipeline while 5 of 5 would ignore natural query ambiguity.
 
 ---
 
@@ -37,64 +35,34 @@ Given a query that matches no listings, the agent stops before calling
 `suggest_outfit` and returns a message naming what to change — 5 of 5 tries.
 
 **Why this target:**
-<!-- Why is 5 of 5 reasonable here when criterion 1 isn't? What's different
-     about this path? -->
+Unlike the happy path, branching on an empty search result is pure deterministic control flow (`if not results: return session`). There are no model calls or external network dependencies in this decision path, so once an empty list is returned, the loop must halt 100% of the time (5 of 5 tries) without exception.
 
 ---
 
-## 3. Something about state
+## 3. Session state integrity across tool calls
 
-<!-- YOU WRITE THIS ONE.
-
-     How would you know that the item your search found is the same item the
-     next tool received? Name something countable or observable.
-
-     This is the criterion people find hardest, because state failure doesn't
-     look like state failure — it looks like a tool problem. Something that
-     compares session["selected_item"] against what actually reached
-     suggest_outfit is the shape you're after. -->
-
-
+Given a query that matches at least one listing, `session["selected_item"]` holds the exact item dictionary returned in `session["search_results"][0]` (matching `id`, `title`, and `price`), and that exact item dictionary is passed into `suggest_outfit` and `create_fit_card` without key mutations or data loss — in 5 of 5 tries.
 
 **Why this target:**
-
-
+State management in our planning loop is pure deterministic Python dictionary access. Unlike generative model responses or external network APIs, reading from and writing to `session` has no stochastic variation or external failure modes. Any failure to preserve the selected item between tools would be a fundamental logic defect in the agent loop rather than acceptable variance, so 5 of 5 is the appropriate standard.
 
 ---
 
-## 4. Something about the fit card
+## 4. Fit card brevity for social sharing
 
-<!-- YOU WRITE THIS ONE.
-
-     The fit card calls a model, so the same input can produce different words
-     each time. That's not a bug — it's the nature of the tool. So what would
-     make it acceptable?
-
-     Think about what you'd actually be unhappy to see. A caption that never
-     mentions the price? Two different items producing the same opening
-     sentence? A card longer than a caption anyone would post? Any of those can
-     be turned into a number. -->
-
-
+Across 5 test runs on distinct items, the caption returned by `create_fit_card` is concise and social-media ready, containing strictly fewer than 50 words — in 5 of 5 tries.
 
 **Why this target:**
-
-
+A thrift fit card is meant to be a short, shareable social caption rather than a lengthy descriptive paragraph. Generative language models naturally drift toward wordy explanations unless constrained. We set an ambitious target of 5 of 5 with a 50-word ceiling to hold our prompt to a strict brevity standard, providing an unambiguous, measurable threshold to diagnose and tune if verbosity occurs.
 
 ---
 
-## 5. Your choice
+## 5. Wardrobe inventory grounding in outfit recommendations
 
-<!-- YOU WRITE THIS ONE TOO.
-
-     Pick something you actually care about getting right. Speed, the empty
-     wardrobe path, what happens when the model can't be reached, whether the
-     search respects a price ceiling — anything, as long as it names a number
-     or an observable outcome. -->
-
-
+Given an item and a user wardrobe containing inventory pieces, `suggest_outfit` explicitly references at least one existing piece by its exact `name` from `wardrobe["items"]` in its recommendations — in 5 of 5 tries.
 
 **Why this target:**
+The core value proposition of FitFindr is connecting thrifting finds to clothes the user already owns. Recommending generic staples (like "white sneakers" or "dark jeans") that aren't in the user's wardrobe breaks user trust and defeats the purpose of maintaining a wardrobe state. We set a 5 of 5 target to enforce that our prompt strictly grounds the model's outfit recommendations in the user's actual inventory.
 
 
 
