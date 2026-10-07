@@ -39,7 +39,7 @@
 
 ## What This Does
 
-<!-- Three or four sentences: what a user asks for, and what they get back. -->
+FitFindr is a thrift shopping agent that searches listings, styles finds with clothes you already own, and writes social captions to show them off. A user asks for what they want in plain language with an optional size and price limit (e.g., 'vintage graphic tee under $30, size M'). When matching items are found, FitFindr picks the top result, pairs it with pieces from the user's existing wardrobe, and creates a ready-to-post fit card. If no listings match, the agent stops early and explains what filters or keywords to change instead of failing blindly.
 
 
 
@@ -93,57 +93,97 @@
 
 ## Sample Run
 
-<!-- Two things go here.
-
-     1. One FULL query and its output, pasted as text.
-     2. Your three per-tool terminal tests — the command and what it printed. -->
-
 **One full query**
 
 ```
-$ python app.py ask '...'
+$ python app.py ask 'vintage graphic tee under $30'
 
+  Found:    Graphic Tee — 2003 Tour Bootleg Style — $24.0 on depop
+
+  Outfit:   Hey there! FitFindr here, your go-to guide for making thrifted gems work hard in your rotation. 
+
+That 2003 tour bootleg tee is an absolute score. The faded graphic and slightly boxy, worn-in cotton give it instant authenticity and effortless cool-guy/cool-girl energy. Since it leans heavily into grunge and streetwear, it’s super versatile. 
+
+Here are two specific outfit pairings using pieces straight from your current wardrobe to style this piece:
+
+Look 1: The Off-Duty Grunge Staple
+- Top: Graphic Tee — 2003 Tour Bootleg Style
+- Bottoms: Baggy straight-leg jeans, dark wash
+- Shoes: Black combat boots
+- Outerwear: Vintage black denim jacket
+
+Why it works: The boxy fit of the tee pairs naturally with the volume of your baggy dark wash jeans for that authentic skate/grunge silhouette. Anchoring the bottom half with black combat boots creates a grounded look, while the vintage black denim jacket adds subtle texture play.
+
+Look 2: High-Low Streetwear Contrast
+- Top: Graphic Tee — 2003 Tour Bootleg Style
+- Bottoms: Wide-leg khaki trousers
+- Shoes: Chunky white sneakers
+- Accessories: Brown leather belt
+
+Why it works: Taking a grungy rock tee and pairing it with tailored, wide-leg khaki trousers gives you great contrast. Tucking the tee loosely and breaking the waistline with a leather belt creates an effortless, editorial streetwear fit.
+
+  Fit card: Okay but can we talk about this find?? 😭🔥 
+
+Just scored this 2003 tour bootleg tee on Depop for $24 and I am officially obsessed. The fade on the graphic? Immaculate. The boxy, perfectly worn-in cotton? Instant cool-girl/cool-guy energy without even trying. 
+
+Y'all know I had to immediately test-drive it with pieces already sitting in the closet. Here’s how we’re styling it:
+
+🖤 Look 1 (Off-Duty Grunge): Paired it with my favorite baggy straight-leg jeans, black combat boots, and tossed a vintage black denim jacket over top. The proportions are giving major early-2000s skate vibes, and the textures just work. 
+
+✨ Look 2 (High-Low Streetwear): Tucked it loosely into some tailored wide-leg khaki trousers with a brown leather belt and chunky white sneakers. Mixing the grungy, beat-up tee with tailored pants creates that effortless "I just threw this on but look like a fashion week street style photographer took my picture" tension. 
+
+Honestly? 10/10, absolute no-brainer. Drop a 💀 in the comments if you would've snatched this up too! 
+
+#FitFindr #DepopFinds #ThriftHaul #StreetwearStyle #GrungeAesthetic #ThriftedFashion #OutfitInspo
+
+0 model calls this session, 2 served from cache
 ```
 
 **The three tools, tested one at a time**
 
 ```
 $ python -c "from tools import search_listings; print(search_listings('graphic tee', max_price=30))"
-
+[{'id': 'lst_006', 'title': 'Graphic Tee — 2003 Tour Bootleg Style', 'description': 'Vintage-style bootleg tee with faded graphic. Slightly boxy fit. 100% cotton, soft and worn-in.', 'category': 'tops', 'style_tags': ['graphic tee', 'vintage', 'grunge', 'streetwear', 'band tee'], 'size': 'L', 'condition': 'good', 'price': 24.0, 'colors': ['black'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_002', 'title': 'Y2K Baby Tee — Butterfly Print', 'description': 'Super cute early 2000s baby tee with butterfly graphic. Fitted crop length. Tag says medium but fits like a small.', 'category': 'tops', 'style_tags': ['y2k', 'vintage', 'graphic tee', 'cottagecore'], 'size': 'S/M', 'condition': 'excellent', 'price': 18.0, 'colors': ['white', 'pink', 'purple'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_033', 'title': 'Vintage Band Tee — Faded Grey', 'description': 'Faded grey band-style tee with distressed graphic. Crew neck. Fits boxy. Well-loved but no holes or major damage.', 'category': 'tops', 'style_tags': ['vintage', 'grunge', 'band tee', 'graphic tee', 'streetwear'], 'size': 'L', 'condition': 'fair', 'price': 19.0, 'colors': ['grey', 'charcoal'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_015', 'title': 'Vintage Graphic Hoodie — Faded Black', 'description': 'Faded black pullover hoodie with barely-visible vintage graphic on the chest. Cozy interior. Some pilling but adds to the worn-in look.', 'category': 'tops', 'style_tags': ['vintage', 'grunge', 'graphic', 'streetwear'], 'size': 'L', 'condition': 'fair', 'price': 26.0, 'colors': ['black', 'charcoal'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_017', 'title': 'Mesh Long-Sleeve Top — Black', 'description': 'Sheer black mesh long-sleeve. Great for layering under a graphic tee or over a bralette. Stretchy material, fits true to size.', 'category': 'tops', 'style_tags': ['y2k', 'grunge', 'goth', 'layering'], 'size': 'S/M', 'condition': 'excellent', 'price': 15.0, 'colors': ['black'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_011', 'title': 'Low-Rise Cargo Pants — Khaki', 'description': 'Y2K era low-rise cargo pants. Lots of pockets. Khaki color, slightly distressed at the hems. Great for layering with a long tee.', 'category': 'bottoms', 'style_tags': ['y2k', 'cargo', '2000s', 'streetwear'], 'size': 'W29', 'condition': 'fair', 'price': 27.0, 'colors': ['khaki', 'tan'], 'brand': None, 'platform': 'poshmark'}]
 ```
 
 ```
-$ python -c "from tools import suggest_outfit; ..."
+$ python -c "from tools import suggest_outfit; from utils.data_loader import get_example_wardrobe, load_listings; print(suggest_outfit(load_listings()[0], get_example_wardrobe()))"
+Hey there! I'm FitFindr, your go-to thrift stylist. Finding a solid pair of vintage Levi's 501s in a great medium wash is like hitting the thrift store jackpot—that natural knee fading gives them instant character. Here are two outfit pairings using pieces from your existing wardrobe:
 
+Look 1: Off-Duty Streetwear
+- White ribbed tank top
+- Vintage black denim jacket
+- Chunky white sneakers
+- Black crossbody bag
+Why it works: Tucking the white ribbed tank into high-waisted 501s creates a clean silhouette that balances the relaxed denim, while the black denim jacket adds contrast.
+
+Look 2: Cozy-Chic Contrast
+- Oversized grey crewneck sweatshirt
+- Black combat boots
+- Brown leather belt
+Why it works: A slight front tuck of the oversized sweatshirt into the 501s defines the waist while keeping that lived-in feel, anchored by black combat boots.
 ```
 
 ```
-$ python -c "from tools import create_fit_card; ..."
-
+$ python -c "from tools import create_fit_card; from utils.data_loader import load_listings; print(create_fit_card('jeans and white sneakers with black jacket', load_listings()[0]))"
+Still pinching myself over this find 🥹✨ Scored these vintage Levi’s 501s in the perfect medium wash on Depop for literally $38. Keeping it stupid simple for the fit today: classic white sneakers, my go-to black jacket, and letting the denim do all the talking. Proof that the best pieces are the ones already in circulation. 🤌👖 #thrifting #depopfinds #levis501 #streetstyle
 ```
 
 ---
 
 ## How I Used AI
 
-<!-- Two specific moments. What you asked, what came back, what you changed.
-
-     "I used Claude to help me code" is not enough.
-
-     "I gave Claude my search_listings spec. It returned None on no match
-     instead of an empty list, so I changed it" is the level we want. -->
-
 **Moment 1**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* I asked AI to propose acceptance criteria for our fit card tool that would be strictly measurable and testable.
+- *What came back:* It returned a compound criterion checking four rules at once: word count between 20-55 words, dollar price inclusion, platform name, and at least two hashtags.
+- *What I changed:* I simplified it down to a single-factor criterion focusing strictly on length (under 50 words). A compound criterion makes diagnosis ambiguous because when a test fails, you cannot cleanly isolate which requirement broke the run.
 
 **Moment 2**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* I asked AI to help draft prompt templates in `tools.py` for `create_fit_card` and `suggest_outfit`.
+- *What came back:* The suggested prompts included rigid guardrails like "strictly under 40 words" and "You MUST explicitly reference wardrobe items by exact name."
+- *What I changed:* I removed those defensive constraints and used natural baseline prompts instead. This made the prompts more natural and did not overfit all the prompts just to try to pass our criteria.
 
 <!-- ═══════════════════════ UNIT 4 — THE TEST ═══════════════════════
 
